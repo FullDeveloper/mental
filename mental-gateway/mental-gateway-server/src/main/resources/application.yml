@@ -1,0 +1,66 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8881/eureka/
+
+server:
+  port: 8888
+
+spring:
+  application:
+    name: mental-gateway
+  cloud:
+    bus:
+      trace:
+        enabled: true #开启消息追踪
+#  rabbitmq:
+#    host: localhost
+#    username: guest
+#    password:  guest
+#    port: 5672
+zuul:
+  prefix: /api
+  routes:
+    admin:
+      path: /admin/**
+      serviceId: mental-admin
+    auth:
+      path: /auth/**
+      serviceId: mental-auth
+
+gate:
+  ignore:
+    startWith: /static,/auth/jwt
+
+auth:
+  serviceId: mental-auth
+  user:
+    token-header: Authorization
+  client:
+    token-header: client-token
+    id: mental-gateway  #不填则默认读取spring.application.name
+    secret: 123456
+
+feign:
+  httpclient:
+    enable: false
+  okhttp:
+    enable: true
+
+
+
+management:
+  security:
+    enabled: false # 刷新时，关闭安全验证
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000

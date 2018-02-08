@@ -1,0 +1,79 @@
+server:
+  port: 8882
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8881/eureka/
+
+spring:
+  application:
+    name: mental-admin
+  datasource: # 驱动配置信息
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://127.0.0.1:3306/mental_admin?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: 123456
+    driverClassName: com.mysql.jdbc.Driver
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    filters: stat,wall,log4j
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+feign:
+  hystrix:
+    enabled: true #Feign是自带断路器的，在D版本的Spring Cloud中，它没有默认打开。需要在配置文件中配置打开它，在配置文件加以下代码：
+
+mybatis:
+  type-aliases-package: com.emed.mental.admin.entity
+  mapper-locations: classpath:mapper/*.xml
+mapper:
+  mappers: com.emed.mental.admin.util.CommonMapper
+  not-empty: false
+  identity: MYSQL
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+logging:
+  level:
+    com:
+      emed:
+        mental:
+          admin:
+            mapper: trace
+
+auth:
+  serviceId: mental-auth
+  user:
+    token-header: Authorization
+  client:
+    id: mental-admin
+    secret: 123456
+    token-header: client-token
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+
+
